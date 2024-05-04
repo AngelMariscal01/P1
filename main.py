@@ -14,15 +14,16 @@ dfPlayTimeGenre = pd.read_parquet('./API/PlayTimeGenreParquet.parquet')
 dfUserForGenre = pd.read_parquet('./API/UserForGenreParquet.parquet')
 
 dfUserRecommend = pd.read_parquet('./API/UsersRecommendParquet.parquet')
+"""
 df = pd.read_parquet('./data/ETL.parquet')
 
 nombres = pd.read_parquet('./data/NombresJuegos.parquet')
 features = df.drop(columns=['ItemId'])
 # Preprocesamiento y normalización de datos
-scaler = MinMaxScaler()
-df_normalized = scaler.fit_transform(features)
+#scaler = MinMaxScaler()
+#df_normalized = scaler.fit_transform(features)
 # Cálculo de la similitud de coseno
-similarities = cosine_similarity(df_normalized)
+#similarities = cosine_similarity(df_normalized)
 
 # Función para obtener los ítems más similares dado un ítem de referencia
 def obtener_similares(id_item_referencia, n=5):
@@ -40,7 +41,7 @@ async def ruta_prueba(ItemId: int):
     json_resultado = df_resultado.to_dict(orient='records')
     return json_resultado
 
-
+"""
 def PlayTime(genero: str, df):
     # Filtrar el DataFrame para obtener solo las filas que corresponden al género proporcionado
     filtered_df = df[df['Generos'] == genero].copy()  # Crear una copia explícita
@@ -141,22 +142,3 @@ def sentiment_analysis(year: int):
     
     # Crear el diccionario de retorno con los valores mapeados
     return {sentiment_mapping[key]: value for key, value in sentiment_counts.items()}
-
-"""
-
-
-def cargar_joblib_desde_gz(archivo_gz):
-    with gzip.open(archivo_gz, 'rb') as f:
-        datos = load(f)
-    return datos
-
-similarities_loaded = cargar_joblib_desde_gz('modelo.gz')
-
-def obtener_similares(id_item_referencia, n=5):
-    index_referencia = df[df['ItemId'] == id_item_referencia].index[0]
-    similar_indices = similarities_loaded[index_referencia].argsort()[::-1][:n+1]
-    similar_items = df.iloc[similar_indices]
-    return similar_items
-
-
-"""
