@@ -21,6 +21,8 @@ df_normalized = scaler.fit_transform(features)
 similarities = cosine_similarity(df_normalized)
 del df_normalized
 del scaler
+
+"""
 def PlayTime(genero: str, df):
     # Filtrar el DataFrame para obtener solo las filas que corresponden al género proporcionado
     filtered_df = df[df['Generos'] == genero].copy()  # Crear una copia explícita
@@ -41,7 +43,7 @@ def PlayTime(genero: str, df):
     año_con_mas_horas = horas_jugadas_por_año.idxmax()
     
     return año_con_mas_horas
-"""
+
 @app.get("/PlayTimeGenre/{Genre}")
 async def PlayTimeGenre(Genre: str):
     año = PlayTime(Genre, dfPlayTimeGenre)
@@ -122,12 +124,13 @@ def sentiment_analysis(year: int):
     # Crear el diccionario de retorno con los valores mapeados
     return {sentiment_mapping[key]: value for key, value in sentiment_counts.items()}
 
+"""
 def obtener_similares(id_item_referencia, n=5):
     index_referencia = df[df['ItemId'] == id_item_referencia].index[0]
     similar_indices = similarities[index_referencia].argsort()[::-1][:n+1]
     similar_items = df.iloc[similar_indices]
     return similar_items
-"""
+
 @app.get("/recomendacion_juego/{ItemId}")
 async def recomendacion_juego(ItemId: int):
     df = obtener_similares(ItemId)
