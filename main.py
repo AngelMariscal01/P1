@@ -21,7 +21,6 @@ df_normalized = scaler.fit_transform(features)
 similarities = cosine_similarity(df_normalized)
 del df_normalized
 del scaler
-
 """
 def PlayTime(genero: str, df):
     # Filtrar el DataFrame para obtener solo las filas que corresponden al género proporcionado
@@ -71,6 +70,8 @@ async def UserForGenre(Genre: str):
     lista_horas_por_año = [{"Año": int(año), "Horas": horas} for año, horas in horas_por_año.items()]
     
     return {"Usuario con más horas jugadas para Género " + Genre: usuario_max_horas, "Horas jugadas": lista_horas_por_año}
+
+
 
 @app.get("/UsersRecommend/{year}")
 def UsersRecommend(year: int):
