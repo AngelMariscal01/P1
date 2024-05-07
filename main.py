@@ -6,9 +6,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
 from joblib import dump, load
-import gzip
-import pyarrow.parquet as pq
-import pyarrow as pa
+
 app = FastAPI()
 
 dfPlayTimeGenre = pd.read_parquet('./API/PlayTimeGenreParquet.parquet')
@@ -20,35 +18,14 @@ dfUserRecommend = pd.read_parquet('./API/UsersRecommendParquet.parquet')
 df = pd.read_parquet('./data/ETL.parquet')
 
 nombres = pd.read_parquet('./data/NombresJuegos.parquet')
-"""
-def cargarArchivosETL():
-    # Leer y descomprimir la parte 1
-    with gzip.open('parte1.parquet.gz', 'rb') as f:
-        buffer1 = f.read()
-    table1 = pq.read_table(pa.BufferReader(buffer1))
 
-    # Leer y descomprimir la parte 2
-    with gzip.open('parte2.parquet.gz', 'rb') as f:
-        buffer2 = f.read()
-    table2 = pq.read_table(pa.BufferReader(buffer2))
+df = pd.read_parquet('./data/ETL.parquet')
+nombres = pd.read_parquet('./data/NombresJuegos.parquet')
+features = df.drop(columns=['ItemId', 'Precio', 'TiempoJugado'])
+scaler = MinMaxScaler()
+df_normalized = scaler.fit_transform(features)
+similarities = cosine_similarity(df_normalized)
 
-    # Concatenar las dos partes en una sola tabla
-    table_combined = pa.concat_tables([table1, table2])
-
-    # Convertir la tabla a un DataFrame de pandas y luego a una matriz de NumPy
-    df = table_combined.to_pandas()
-    matriz = df.to_numpy()
-    return matriz
-
-similarities = cargarArchivosETL()
-
-# Función para obtener los ítems más similares dado un ítem de referencia
-def obtener_similares(id_item_referencia, n=5):
-    index_referencia = df[df['ItemId'] == id_item_referencia].index[0]
-    similar_indices = similarities[index_referencia].argsort()[::-1][:n+1]
-    similar_items = df.iloc[similar_indices]
-    return similar_items
-"""
 def PlayTime(genero: str, df):
     # Filtrar el DataFrame para obtener solo las filas que corresponden al género proporcionado
     filtered_df = df[df['Generos'] == genero].copy()  # Crear una copia explícita
@@ -152,7 +129,6 @@ def sentiment_analysis(year: int):
 
 @app.get("/recomendacion_juego/{ItemId}")
 async def recomendacion_juego(ItemId: int):
-    df = obtener_similares(ItemId)
     df['ItemId'] = df['ItemId'].astype(str)
     df_resultado = pd.merge(df, nombres, on='ItemId')
     # Seleccionar solo las columnas 'ItemId' y 'Nombre'
