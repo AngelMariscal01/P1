@@ -12,10 +12,7 @@ dfUserForGenre = pd.read_parquet('./API/UserForGenreParquet.parquet')
 
 dfUserRecommend = pd.read_parquet('./API/UsersRecommendParquet.parquet')
 
-df = pd.read_parquet('./data/ETL.parquet')
-
-nombres = pd.read_parquet('./data/NombresJuegos.parquet')
-
+"""
 df = pd.read_parquet('./data/ETL.parquet')
 nombres = pd.read_parquet('./data/NombresJuegos.parquet')
 features = df.drop(columns=['ItemId', 'Precio', 'TiempoJugado', 'Recomendado'])
@@ -44,7 +41,7 @@ def PlayTime(genero: str, df):
     año_con_mas_horas = horas_jugadas_por_año.idxmax()
     
     return año_con_mas_horas
-
+"""
 @app.get("/PlayTimeGenre/{Genre}")
 async def PlayTimeGenre(Genre: str):
     año = PlayTime(Genre, dfPlayTimeGenre)
@@ -130,7 +127,7 @@ def obtener_similares(id_item_referencia, n=5):
     similar_indices = similarities[index_referencia].argsort()[::-1][:n+1]
     similar_items = df.iloc[similar_indices]
     return similar_items
-
+"""
 @app.get("/recomendacion_juego/{ItemId}")
 async def recomendacion_juego(ItemId: int):
     df = obtener_similares(ItemId)
@@ -142,3 +139,4 @@ async def recomendacion_juego(ItemId: int):
     # Convertir el DataFrame a un formato JSON compatible
     json_resultado = df_resultado.to_dict(orient='records')
     return json_resultado
+"""
