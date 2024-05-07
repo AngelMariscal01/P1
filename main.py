@@ -20,7 +20,7 @@ dfUserRecommend = pd.read_parquet('./API/UsersRecommendParquet.parquet')
 df = pd.read_parquet('./data/ETL.parquet')
 
 nombres = pd.read_parquet('./data/NombresJuegos.parquet')
-
+"""
 def cargarArchivosETL():
     # Leer y descomprimir la parte 1
     with gzip.open('parte1.parquet.gz', 'rb') as f:
@@ -48,7 +48,7 @@ def obtener_similares(id_item_referencia, n=5):
     similar_indices = similarities[index_referencia].argsort()[::-1][:n+1]
     similar_items = df.iloc[similar_indices]
     return similar_items
-
+"""
 def PlayTime(genero: str, df):
     # Filtrar el DataFrame para obtener solo las filas que corresponden al género proporcionado
     filtered_df = df[df['Generos'] == genero].copy()  # Crear una copia explícita
