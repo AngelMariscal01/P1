@@ -127,8 +127,15 @@ def sentiment_analysis(year: int):
     # Crear el diccionario de retorno con los valores mapeados
     return {sentiment_mapping[key]: value for key, value in sentiment_counts.items()}
 
+def obtener_similares(id_item_referencia, n=5):
+    index_referencia = df[df['ItemId'] == id_item_referencia].index[0]
+    similar_indices = similarities[index_referencia].argsort()[::-1][:n+1]
+    similar_items = df.iloc[similar_indices]
+    return similar_items
+
 @app.get("/recomendacion_juego/{ItemId}")
 async def recomendacion_juego(ItemId: int):
+    df = obtener_similares(ItemId)
     df['ItemId'] = df['ItemId'].astype(str)
     df_resultado = pd.merge(df, nombres, on='ItemId')
     # Seleccionar solo las columnas 'ItemId' y 'Nombre'
