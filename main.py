@@ -21,11 +21,12 @@ nombres = pd.read_parquet('./data/NombresJuegos.parquet')
 
 df = pd.read_parquet('./data/ETL.parquet')
 nombres = pd.read_parquet('./data/NombresJuegos.parquet')
-features = df.drop(columns=['ItemId', 'Precio', 'TiempoJugado'])
+features = df.drop(columns=['ItemId', 'Precio', 'TiempoJugado', 'Recomendado'])
 scaler = MinMaxScaler()
 df_normalized = scaler.fit_transform(features)
 similarities = cosine_similarity(df_normalized)
-
+del df_normalized
+del scaler
 def PlayTime(genero: str, df):
     # Filtrar el DataFrame para obtener solo las filas que corresponden al género proporcionado
     filtered_df = df[df['Generos'] == genero].copy()  # Crear una copia explícita
@@ -140,6 +141,7 @@ async def recomendacion_juego(ItemId: int):
     df_resultado = pd.merge(df, nombres, on='ItemId')
     # Seleccionar solo las columnas 'ItemId' y 'Nombre'
     df_resultado = df_resultado[['ItemId', 'Titulo']]
+    df_resultado = df_resultado.drop_duplicates()
     # Convertir el DataFrame a un formato JSON compatible
     json_resultado = df_resultado.to_dict(orient='records')
     return json_resultado
