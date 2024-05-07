@@ -47,7 +47,7 @@ def PlayTime(genero: str, df):
 @app.get("/PlayTimeGenre/{Genre}")
 async def PlayTimeGenre(Genre: str):
     año = PlayTime(Genre, dfPlayTimeGenre)
-    return  {"Año de lanzamiento con más horas jugadas para el Género " + Genre + " : " + año}
+    return  {"Año de lanzamiento con más horas jugadas para el Género ", Genre , " : " , año}
 
 @app.get("/UserForGenre/{Genre}")
 async def UserForGenre(Genre: str):
