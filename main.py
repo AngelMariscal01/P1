@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import pandas as pd
 from joblib import load
-import gzip
+import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
@@ -14,16 +14,24 @@ dfPlayTimeGenre = pd.read_parquet('./API/PlayTimeGenreParquet.parquet')
 dfUserForGenre = pd.read_parquet('./API/UserForGenreParquet.parquet')
 
 dfUserRecommend = pd.read_parquet('./API/UsersRecommendParquet.parquet')
-"""
+
 df = pd.read_parquet('./data/ETL.parquet')
 
 nombres = pd.read_parquet('./data/NombresJuegos.parquet')
-features = df.drop(columns=['ItemId'])
-# Preprocesamiento y normalización de datos
-#scaler = MinMaxScaler()
-#df_normalized = scaler.fit_transform(features)
-# Cálculo de la similitud de coseno
-#similarities = cosine_similarity(df_normalized)
+
+def cargarArchivosETL():
+    # Lee la parte 1 desde el archivo comprimido
+    with gzip.open('matriz_similitud_1.npy.gz', 'rb') as f:
+        parte1 = np.load(f)
+
+    # Lee la parte 2 desde el archivo comprimido
+    with gzip.open('matriz_similitud_2.npy.gz', 'rb') as f:
+        parte2 = np.load(f)
+    
+    matriz_reconstruida = np.concatenate((parte1, parte2), axis=0)
+    return matriz_reconstruida
+
+similarities = cargarArchivosETL()
 
 # Función para obtener los ítems más similares dado un ítem de referencia
 def obtener_similares(id_item_referencia, n=5):
@@ -32,16 +40,6 @@ def obtener_similares(id_item_referencia, n=5):
     similar_items = df.iloc[similar_indices]
     return similar_items
 
-@app.get("/Recomendacion_5_Juegos/{ItemId}")
-async def ruta_prueba(ItemId: int):
-    df = obtener_similares(ItemId)
-    df['ItemId'] = df['ItemId'].astype(str)
-    df_resultado = pd.merge(df, nombres, on='ItemId')
-    # Convertir el DataFrame a un formato JSON compatible
-    json_resultado = df_resultado.to_dict(orient='records')
-    return json_resultado
-
-"""
 def PlayTime(genero: str, df):
     # Filtrar el DataFrame para obtener solo las filas que corresponden al género proporcionado
     filtered_df = df[df['Generos'] == genero].copy()  # Crear una copia explícita
@@ -142,3 +140,14 @@ def sentiment_analysis(year: int):
     
     # Crear el diccionario de retorno con los valores mapeados
     return {sentiment_mapping[key]: value for key, value in sentiment_counts.items()}
+
+@app.get("/recomendacion_juego/{ItemId}")
+async def recomendacion_juego(ItemId: int):
+    df = obtener_similares(ItemId)
+    df['ItemId'] = df['ItemId'].astype(str)
+    df_resultado = pd.merge(df, nombres, on='ItemId')
+    # Seleccionar solo las columnas 'ItemId' y 'Nombre'
+    df_resultado = df_resultado[['ItemId', 'Titulo']]
+    # Convertir el DataFrame a un formato JSON compatible
+    json_resultado = df_resultado.to_dict(orient='records')
+    return json_resultado
