@@ -7,6 +7,8 @@ from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
 from joblib import dump, load
 import gzip
+import pyarrow.parquet as pq
+import pyarrow as pa
 app = FastAPI()
 
 dfPlayTimeGenre = pd.read_parquet('./API/PlayTimeGenreParquet.parquet')
@@ -20,11 +22,6 @@ df = pd.read_parquet('./data/ETL.parquet')
 nombres = pd.read_parquet('./data/NombresJuegos.parquet')
 
 def cargarArchivosETL():
-    import gzip
-    import pyarrow.parquet as pq
-    import pyarrow as pa
-    import numpy as np
-
     # Leer y descomprimir la parte 1
     with gzip.open('parte1.parquet.gz', 'rb') as f:
         buffer1 = f.read()
