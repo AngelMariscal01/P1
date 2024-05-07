@@ -1,11 +1,8 @@
 from fastapi import FastAPI
 import pandas as pd
-from joblib import load
-import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
-from joblib import dump, load
 
 app = FastAPI()
 
