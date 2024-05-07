@@ -20,16 +20,28 @@ df = pd.read_parquet('./data/ETL.parquet')
 nombres = pd.read_parquet('./data/NombresJuegos.parquet')
 
 def cargarArchivosETL():
-    # Lee la parte 1 desde el archivo comprimido
-    with gzip.open('matriz_similitud_1.npy.gz', 'rb') as f:
-        parte1 = np.load(f)
+    import gzip
+    import pyarrow.parquet as pq
+    import pyarrow as pa
+    import numpy as np
 
-    # Lee la parte 2 desde el archivo comprimido
-    with gzip.open('matriz_similitud_2.npy.gz', 'rb') as f:
-        parte2 = np.load(f)
-    
-    matriz_reconstruida = np.concatenate((parte1, parte2), axis=0)
-    return matriz_reconstruida
+    # Leer y descomprimir la parte 1
+    with gzip.open('parte1.parquet.gz', 'rb') as f:
+        buffer1 = f.read()
+    table1 = pq.read_table(pa.BufferReader(buffer1))
+
+    # Leer y descomprimir la parte 2
+    with gzip.open('parte2.parquet.gz', 'rb') as f:
+        buffer2 = f.read()
+    table2 = pq.read_table(pa.BufferReader(buffer2))
+
+    # Concatenar las dos partes en una sola tabla
+    table_combined = pa.concat_tables([table1, table2])
+
+    # Convertir la tabla a un DataFrame de pandas y luego a una matriz de NumPy
+    df = table_combined.to_pandas()
+    matriz = df.to_numpy()
+    return matriz
 
 similarities = cargarArchivosETL()
 
