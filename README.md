@@ -7,9 +7,6 @@ Este proyecto representa un hito importante en mi camino hacia convertirme en un
 
 En este repositorio, encontrarán todos los elementos necesarios para evaluar mi proyecto. He puesto mucho esfuerzo y dedicación en cada aspecto, y estoy ansioso por recibir sus comentarios y sugerencias.
 
-# Carpeta API
-En la carpeta API se encuentra todo el proceso ETL (Extracción, Transformación y Carga) necesario para implementar las siguientes funciones:
-
 ## Carpeta API
 
 En la carpeta API se encuentra todo el proceso ETL (Extracción, Transformación y Carga) necesario para implementar las siguientes funciones en la api:
